@@ -47,3 +47,10 @@ foreach ($result as $key => $newsItem) {
 ## Requirements
 
 phpMyCache requires PHP 5 with the mySQLi extension installed.
+
+
+## To do
+
+Looking to contribute? These are some of the things that would be great to be added to phpMyCache. Feel free to submit your work via a pull request!
+* Support for prepared queries.
+* Support for custom callbacks in configuration to handle successful & failed queries, so developers can control how output is constructed.
