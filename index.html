@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>phpMyCache by Alpha4615</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/Alpha4615/phpMyCache">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/Alpha4615/phpMyCache/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/Alpha4615/phpMyCache/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>phpMyCache</h1>
+          <p>Easy caching of mySQL queries</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/Alpha4615">Alpha4615</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a name="give-your-database-a-breather" class="anchor" href="#give-your-database-a-breather"><span class="octicon octicon-link"></span></a>Give your database a breather!</h1>
+
+<p>phpMyCache is a simple library written in PHP that allows developers to not put unnecessary strain on databases for queries that do not require "as of this exact moment" accuracy. Why should you constantly ask the mySQL database for "yesterday's most downloaded files?" Just cache that result set for 24 hours. Why force your database to re-fetch your latest blog entries when you only write once a week? Cache that result set for a couple days!</p>
+
+<p>It's that simple. Allow phpMyCache to handle your caching. Pass it the SELECT query you'd normally pass directly to mySQL. phpMyCache will automatically detect the current cache status for that query and either load the the cached data or re-fetch it from the database. </p>
+
+<h2>
+<a name="how-does-it-work" class="anchor" href="#how-does-it-work"><span class="octicon octicon-link"></span></a>How Does It Work?</h2>
+
+<p>It's really simple. You include the library in your code and instantiate the phpMyCache class into an object. When you pass a query into the library with via the <strong>queryCache()</strong>, the library generates a signature of your query by creating a SHA1 hash of it. Along with the query string, you may also pass a expiry length in seconds of how long this cached data result should be considered fresh. </p>
+
+<p>The retrieved data plus the metadata (expiry duration and timestamp of cache creation) is stored as a serialized array. This is so that the library can later load this back into an array to determine the staleness of the cache and decide whether or not it should re-fetch the data.</p>
+
+<h2>
+<a name="other-use-cases" class="anchor" href="#other-use-cases"><span class="octicon octicon-link"></span></a>Other Use Cases</h2>
+
+<ul>
+<li>  Count of registered users</li>
+<li>  List of recent popular threads or content items</li>
+<li>  Daily statistics</li>
+</ul><h2>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>phpMyCache requires a few configuration settings that can be passed when the phpMyCache class is instantiated or through a getter/setter after the class is instantiated. This list may change frequently, so it's best to monitor the README.md file! But here's two examples on how to do load settings into a phpMyCache instance:</p>
+
+<h3>
+<a name="array-pre-instantiation" class="anchor" href="#array-pre-instantiation"><span class="octicon octicon-link"></span></a>Array Pre-Instantiation</h3>
+
+<pre><code>$phpMyCacheConfig = array(
+    'cacheDirectory'                =&gt; '/home/johndoe/web/cache/',
+    'defaultExpiry'                 =&gt; 3600
+);
+$pmc = new phpMyCache($database, $phpMyCacheConfig);
+</code></pre>
+
+<h3>
+<a name="gettersetter-post-instantiation" class="anchor" href="#gettersetter-post-instantiation"><span class="octicon octicon-link"></span></a>Getter/Setter Post-Instantiation</h3>
+
+<pre><code>$pmc = new phpMyCache($database);
+$pmc-&gt;setOption('cacheDirectory', '/home/johndoe/web/cache/')
+    -&gt;setOption('defaultExpiry', 3600);
+</code></pre>
+
+<h2>
+<a name="implementation-example" class="anchor" href="#implementation-example"><span class="octicon octicon-link"></span></a>Implementation Example</h2>
+
+<p>The following code would pull the latest 10 articles from a table called news. The first request of this data will query the database directly. The results are restored for subsequent requests to this exact query that happen within the next hour (3600 seconds). After that time, the cache is invalidated and the database will be queried directly again.</p>
+
+<pre><code>&lt;?php
+include('../phpMyCache/lib/phpMyCache.php');
+include('../phpMyCache/phpMyCache.conf.php');
+
+
+$database = mysqli_connect('localhost', 'root', 'password', 'database');
+$cacheDB = new phpMyCache($database, $phpMyCacheConfig);
+$result = $cacheDB-&gt;queryCache("SELECT headline FROM news ORDER BY pubDate DESC LIMIT 0,10", 3600);
+
+foreach ($result as $key =&gt; $newsItem) {
+    print $newsItem['headline']."&lt;br /&gt;";
+}
+
+
+?&gt;
+</code></pre>
+
+<h2>
+<a name="tools" class="anchor" href="#tools"><span class="octicon octicon-link"></span></a>Tools</h2>
+
+<h3>
+<a name="cleanexpiredcachephp" class="anchor" href="#cleanexpiredcachephp"><span class="octicon octicon-link"></span></a>cleanExpiredCache.php</h3>
+
+<p>Currently cache files are never deleted. This can result in a lot of files sitting around in your cache directory. This tool, when executed, will scan all files in your cache directory and delete the ones that have expired. This is useful as a nightly cron. To use it, you must create your own file (let's say, cleanup.php) and define $cacheDirectory prior to including the tool file. Your file should look something similar to this:</p>
+
+<pre><code>&lt;?php
+ $cacheDirectory = '/home/johndoe/web/cache';
+ require('/home/johndoe/web/phpMyCache/tools/cleanExpiredCache.php');
+?&gt;
+</code></pre>
+
+<p>Now simply add cleanup.php to your crontab and you're good to go!</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
