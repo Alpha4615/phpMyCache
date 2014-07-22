@@ -63,10 +63,11 @@ class phpMyCache
      *
      * @param string       $query
      * @param null|integer $expiry
+     * @param boolean      $ignoreCache Specify true if you want this query to bypass cache checking.
      * @return array Associative array of the results where the key is the fieldName and the value is the corresponding value
      */
 
-    public function queryCache($query, $expiry = NULL)
+    public function queryCache($query, $expiry = NULL, $ignoreCache = FALSE)
     {
         //Validate our config and throw exceptions if there's anything invalid going on.
         $this->option->validate();
@@ -78,7 +79,7 @@ class phpMyCache
         $path = $this->option->get('cacheDirectory') . $filename;
 
         //First we check if this query has been cached
-        if (file_exists($path)) {
+        if ($ignoreCache === FALSE && file_exists($path)) {
             $cache  = file_get_contents($path);
             $result = unserialize($cache);
 
@@ -102,9 +103,9 @@ class phpMyCache
     /**
      * This is a hand-off method used by queryCache() when it decides to actually perform the query against the mySQL database.
      *
-     * @param string $query
+     * @param string         $query
      * @param integer|string $expiry
-     * @param string $signature SHA1() Signature of the query.
+     * @param string         $signature SHA1() Signature of the query.
      * @return array
      */
     protected function proceedQuery($query, $expiry, $signature)
