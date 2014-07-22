@@ -75,8 +75,7 @@ class phpMyCache
         $expiry         = ($expiry != NULL && is_numeric($expiry) ? intval($expiry) : intval($this->option->get('defaultExpiry')));
         $querySignature = sha1($query);
         $filename       = $this->option->get('cacheFilePrefix') . $querySignature . $this->option->get('cacheFileSuffix');
-
-        $path = $this->option->get('cacheDirectory') . $filename;
+        $path           = $this->option->get('cacheDirectory') . $filename;
 
         //First we check if this query has been cached
         if ($ignoreCache === FALSE && file_exists($path)) {
