@@ -1,7 +1,7 @@
 
 # phpMyCache
 
-phpMyCache is a simple library that caches responses from _mySQL_ SELECT queries. The caching library is helpful when performing queries that does is not updated frequently and thus does not constantly require a fresh dataset from the database. This should result in less strain on the database as queries are only fetched from the database when the associated cached data has expired or does not exist.
+phpMyCache is a simple library that caches responses from _mySQL_ SELECT queries. The caching library is helpful when performing queries that does is not updated frequently and thus does not constantly require a fresh dataset from the database. This should result in less strain on the database as queries are only fetched from the database when the associated cached data has expired or does not exist. Be sure to check out the [phpMyCache webpage](http://phpmycache.com)!
 
 ## Example Use Cases
 
