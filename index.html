@@ -50,7 +50,7 @@
 
 <p>It's really simple. You include the library in your code and instantiate the phpMyCache class into an object. When you pass a query into the library with via the <strong>queryCache()</strong>, the library generates a signature of your query by creating a SHA1 hash of it. Along with the query string, you may also pass a expiry length in seconds of how long this cached data result should be considered fresh. </p>
 
-<p>The retrieved data plus the metadata (expiry duration and timestamp of cache creation) is stored as a serialized array. This is so that the library can later load this back into an array to determine the staleness of the cache and decide whether or not it should re-fetch the data.</p>
+<p>The retrieved data plus the metadata (expiry duration and timestamp of cache creation) is stored as a JSON string. This is so that the library can later load this back into an array to determine the staleness of the cache and decide whether or not it should re-fetch the data.</p>
 
 <h2>
 <a name="other-use-cases" class="anchor" href="#other-use-cases"><span class="octicon octicon-link"></span></a>Other Use Cases</h2>
