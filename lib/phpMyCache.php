@@ -80,7 +80,7 @@ class phpMyCache
         //First we check if this query has been cached
         if ($ignoreCache === FALSE && file_exists($path)) {
             $cache  = file_get_contents($path);
-            $result = unserialize($cache);
+            $result = json_decode($cache, true);
 
             $createdDate = $result['createdDate'];
             $expiration  = $result['expires'];
@@ -123,7 +123,7 @@ class phpMyCache
         $cacheWrite['data'] = $data;
         $filename           = $this->option->get('cacheFilePrefix') . $signature . $this->option->get('cacheFileSuffix');
 
-        file_put_contents($this->option->get('cacheDirectory') . $filename, serialize($cacheWrite));
+        file_put_contents($this->option->get('cacheDirectory') . $filename, json_encode($cacheWrite));
 
         return $data;
     }
