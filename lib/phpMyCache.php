@@ -126,7 +126,7 @@ class phpMyCache
      * This is a hand-off method used by queryCache() when it decides to actually perform the query against the mySQL database.
      *
      * @param string         $query
-     * @param integer|string $expiry
+     * @param integer|string $expiry If an expiry of 0 (integer zero) is provided, cache will not be written.
      * @param string         $signature SHA1() Signature of the query.
      * @return array
      */
@@ -143,10 +143,12 @@ class phpMyCache
             $data[] = $row;
         }
 
-        $cacheWrite['data'] = $data;
-        $filename           = $this->option->get('cacheFilePrefix') . $signature . $this->option->get('cacheFileSuffix');
+        if ($expiry !== 0) {
+            $cacheWrite['data'] = $data;
+            $filename           = $this->option->get('cacheFilePrefix') . $signature . $this->option->get('cacheFileSuffix');
 
-        file_put_contents($this->option->get('cacheDirectory') . $filename, json_encode($cacheWrite));
+            file_put_contents($this->option->get('cacheDirectory') . $filename, json_encode($cacheWrite));
+        }
 
         return $data;
     }
