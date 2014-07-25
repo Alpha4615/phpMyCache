@@ -98,6 +98,13 @@ class phpMyCache
             $cache  = file_get_contents($path);
             $result = json_decode($cache, TRUE);
 
+            // Is cache valid? e.g., is it corrupted?
+            if (phpMyCache::isCacheValid($result) == FALSE) {
+                // If it's not valid, then we ignore it and delegate to the database
+
+                return $this->proceedQuery($query, $expiry, $querySignature);
+            }
+
             $createdDate = $result['createdDate'];
             $expiration  = $result['expires'];
 
