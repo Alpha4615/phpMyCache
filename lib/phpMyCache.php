@@ -90,7 +90,7 @@ class phpMyCache
         //First we check if this query has been cached
         if ($ignoreCache === FALSE && file_exists($path)) {
             $cache  = file_get_contents($path);
-            $result = json_decode($cache, true);
+            $result = json_decode($cache, TRUE);
 
             $createdDate = $result['createdDate'];
             $expiration  = $result['expires'];
