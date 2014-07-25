@@ -58,6 +58,16 @@ class phpMyCache
         return $this->option->get($propertyName);
     }
 
+    protected static function isCacheValid($cacheTest)
+    {
+        if (is_array($cacheTest) == FALSE) return FALSE;
+        if (!(isset($cacheTest['expires']) == TRUE && is_int($cacheTest['expires']) == TRUE)) return FALSE;
+        if (!(isset($cacheTest['createdDate']) == TRUE && is_int($cacheTest['createdDate']) == TRUE)) return FALSE;
+        if (!(isset($cacheTest['data']) == TRUE && is_array($cacheTest['data']) == TRUE)) return FALSE;
+
+        return TRUE;
+    }
+
     /**
      * Returns data for the query provided. Data will be cached into a file for the time specified in the $expiry argument. If no $expiry is specified, the default provided in the config will be used
      *
