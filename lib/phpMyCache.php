@@ -58,6 +58,12 @@ class phpMyCache
         return $this->option->get($propertyName);
     }
 
+    /**
+     * Validates an value to confirm if it's compatible array. To pass, $cacheTest must be an array and contain the keys 'expires' (which contains an integers), 'createdDate' (which contains an integer) and data (which contains an array)
+     *
+     * @param mixed $cacheTest
+     * @return bool
+     */
     protected static function isCacheValid($cacheTest)
     {
         if (is_array($cacheTest) == FALSE) return FALSE;
