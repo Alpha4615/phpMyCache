@@ -102,7 +102,7 @@ class phpMyCache
             $result = json_decode($cache, TRUE);
 
             // Is cache valid? e.g., is it corrupted?
-            if (phpMyCache::isCacheValid($result) == FALSE) {
+            if (self::isCacheValid($result) == FALSE) {
                 // If it's not valid, then we ignore it and delegate to the database
 
                 return $this->proceedQuery($query, $expiry, $querySignature);
