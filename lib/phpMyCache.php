@@ -11,6 +11,9 @@ class phpMyCache
      */
     protected $option;
 
+    const SOURCE_CACHE    = 1;
+    const SOURCE_DATABASE = 2;
+
     /**
      * @param mysqli     $databaseResource The resource provided by a successful call to mysqli_connect();
      * @param null|array $config
@@ -112,6 +115,8 @@ class phpMyCache
                 // cache has expired, get new results and replace current cache.
                 return $this->proceedQuery($query, $expiry, $querySignature);
             } else {
+                $result['source'] = self::SOURCE_CACHE;
+
                 return $result['data'];
             }
         } else {
@@ -149,6 +154,8 @@ class phpMyCache
 
             file_put_contents($this->option->get('cacheDirectory') . $filename, json_encode($cacheWrite));
         }
+        // We define this after the write because it doesn't make sense to write it to cache.
+        $cacheWrite['source'] = self::SOURCE_DATABASE;
 
         return $data;
     }
