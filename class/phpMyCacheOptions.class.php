@@ -10,6 +10,7 @@ class phpMyCacheOptions
     protected $cacheFileSuffix;
     //This is true by default. Turn it off if you don't want/need it.
     protected $throwExceptionOnInvalidOption = TRUE;
+    protected $errorCallback;
 
     /**
      * @var array List of required options. validate(); will fail if any of these options are not set
@@ -105,6 +106,7 @@ class phpMyCacheOptions
 
     /**
      * Validates the provided configuration settings. It checks for required values and also validates the configuration for proper data types and such.
+     *
      * @throws InvalidArgumentException
      * @throws MissingOptionException
      */
@@ -121,7 +123,10 @@ class phpMyCacheOptions
             throw new MissingOptionException('Missing values for required option(s): ' . implode(', ', $missing));
         }
         if (is_numeric($this->get('defaultExpiry')) == FALSE) {
-            throw new InvalidArgumentException ("defaultExpiry configuration must be an integer");
+            throw new InvalidArgumentException("defaultExpiry configuration must be an integer");
+        }
+        if ((($this->get('errorCallback') instanceof Closure) || $this->get('errorCallback') === NULL) === FALSE) {
+            throw new InvalidArgumentException('errorCallback must be an anonymous function or NULL.');
         }
 
     }

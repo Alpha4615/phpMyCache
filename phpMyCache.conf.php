@@ -11,6 +11,10 @@ $phpMyCacheConfig = array(
     'cacheFilePrefix'               => '',
     // What, if any, suffix would you like to be added to cache filenames? If this is changed, previous cache files will essentially be invalidated.
     'cacheFileSuffix'               => '.cache',
+    // This function will be executed when a query fails, if you wish not to use a callback at all, set this to NULL
+    'errorCallback'                 => function ($databaseObject) {
+            throw new InvalidQueryException($databaseObject->error);
+        },
     //Throw exceptions when invalid options are passed into the option getter/setters
     'throwExceptionOnInvalidOption' => TRUE
 

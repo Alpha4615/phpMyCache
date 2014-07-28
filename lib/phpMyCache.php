@@ -128,36 +128,60 @@ class phpMyCache
     }
 
     /**
+     * Executes the error callback if one exists.
+     *
+     * @return bool Always returns true (to be stored in variable to basically change lifecycle of parent function)
+     */
+    protected function handleQueryError()
+    {
+        $callback = $this->option->get('errorCallback');
+        if ($callback === NULL) {
+            return TRUE;
+        } else {
+            if ($callback instanceof Closure) {
+                $callback($this->db);
+            }
+
+            return TRUE;
+        }
+    }
+
+    /**
      * This is a hand-off method used by queryCache() when it decides to actually perform the query against the mySQL database.
      *
      * @param string         $query
-     * @param integer|string $expiry If an expiry of 0 (integer zero) is provided, cache will not be written.
+     * @param integer|string $expiry    If an expiry of 0 (integer zero) is provided, cache will not be written.
      * @param string         $signature SHA1() Signature of the query.
-     * @return array
+     * @return array|boolean Returns array of data. If query caused error, it returns false.
      */
     protected function proceedQuery($query, $expiry, $signature)
     {
         $cacheWrite                = array();
         $cacheWrite['createdDate'] = time();
         $cacheWrite['expires']     = $expiry;
+        $queryError                = FALSE;
 
-        $result = $this->db->query($query);
-        $data   = array();
+        $result = $this->db->query($query) or $queryError = $this->handleQueryError();
+        $data = array();
 
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
+        if ($queryError == FALSE) {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+
+            if ($expiry !== 0) {
+                $cacheWrite['data'] = $data;
+                $filename           = $this->option->get('cacheFilePrefix') . $signature . $this->option->get('cacheFileSuffix');
+
+                file_put_contents($this->option->get('cacheDirectory') . $filename, json_encode($cacheWrite));
+            }
+            // We define this after the write because it doesn't make sense to write it to cache.
+            $cacheWrite['source'] = self::SOURCE_DATABASE;
+
+            return $data;
+        } else {
+            return FALSE;
         }
-
-        if ($expiry !== 0) {
-            $cacheWrite['data'] = $data;
-            $filename           = $this->option->get('cacheFilePrefix') . $signature . $this->option->get('cacheFileSuffix');
-
-            file_put_contents($this->option->get('cacheDirectory') . $filename, json_encode($cacheWrite));
-        }
-        // We define this after the write because it doesn't make sense to write it to cache.
-        $cacheWrite['source'] = self::SOURCE_DATABASE;
-
-        return $data;
     }
 
 }
