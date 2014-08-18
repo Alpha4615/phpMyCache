@@ -15,6 +15,8 @@ $phpMyCacheConfig = array(
     'errorCallback'                 => function ($databaseObject) {
             throw new InvalidQueryException($databaseObject->error);
         },
+    // If true, this will return the metadata (including the result set data) instead of just the result set data
+    'returnMeta'                    => FALSE,
     //Throw exceptions when invalid options are passed into the option getter/setters
     'throwExceptionOnInvalidOption' => TRUE
 

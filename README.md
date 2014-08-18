@@ -16,6 +16,7 @@ phpMyCache requires a few configuration settings that can be passed when the php
 * __**defaultExpiry**__ - The duration, in seconds, that data should be considered fresh. This duration is used by the library if an expiry isn't provided when the queryCache() method is called.
 * **cacheFilePrefix** - The text prepended to the filename when a cache file is created. If you are storing cache files from multiple web-applications, it may be useful to have them each use different prefixes.
 * **cacheFileSuffix** - The text appended to the filename when a cache file is created.
+* **returnMeta** - If true, it returns the metadata of the result set (created, expiry, source etc) along with the data, else returns just the result set.
 * **throwExceptionOnInvalidOption** - If this is set to true, the phpMyCacheOptions class will throw an exception when set() or get() targets an invalid configuration setting name. If this is set to false, those methods will instead return **NULL**.
  
 

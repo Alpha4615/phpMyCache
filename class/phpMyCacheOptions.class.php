@@ -8,6 +8,7 @@ class phpMyCacheOptions
 
     protected $cacheFilePrefix;
     protected $cacheFileSuffix;
+    protected $returnMeta;
     //This is true by default. Turn it off if you don't want/need it.
     protected $throwExceptionOnInvalidOption = TRUE;
     protected $errorCallback;
@@ -128,7 +129,9 @@ class phpMyCacheOptions
         if ((($this->get('errorCallback') instanceof Closure) || $this->get('errorCallback') === NULL) === FALSE) {
             throw new InvalidArgumentException('errorCallback must be an anonymous function or NULL.');
         }
-
+        if (is_bool($this->get('returnMeta')) === FALSE && $this->get('returnMeta') !== NULL) {
+            throw new InvalidArgumentException("returnMeta must be a boolean or NULL");
+        }
     }
 
 } 

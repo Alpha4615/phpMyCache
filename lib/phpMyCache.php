@@ -117,7 +117,7 @@ class phpMyCache
             } else {
                 $result['source'] = self::SOURCE_CACHE;
 
-                return $result['data'];
+                return ($this->option->get('returnMeta') === TRUE ? $result : $result['data']);
             }
         } else {
             // no cache exists at all, let's make query;
@@ -178,7 +178,7 @@ class phpMyCache
             // We define this after the write because it doesn't make sense to write it to cache.
             $cacheWrite['source'] = self::SOURCE_DATABASE;
 
-            return $data;
+            return ($this->option->get('returnMeta') === TRUE ? $cacheWrite : $data);
         } else {
             return FALSE;
         }
