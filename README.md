@@ -14,6 +14,7 @@ phpMyCache requires a few configuration settings that can be passed when the php
 
 * __**cacheDirectory**__ - The directory of where library should store the cache files. This should be in a non-web-served directory for security reasons.
 * __**defaultExpiry**__ - The duration, in seconds, that data should be considered fresh. This duration is used by the library if an expiry isn't provided when the queryCache() method is called.
+* **errorCallback** - This is a callback that is called when a SQL query fails. The only parameter is the database connection resource. The query error can be examined from there.
 * **cacheFilePrefix** - The text prepended to the filename when a cache file is created. If you are storing cache files from multiple web-applications, it may be useful to have them each use different prefixes.
 * **cacheFileSuffix** - The text appended to the filename when a cache file is created.
 * **returnMeta** - If true, it returns the metadata of the result set (created, expiry, source etc) along with the data, else returns just the result set.
@@ -54,4 +55,3 @@ phpMyCache requires PHP 5 with the mySQLi extension installed.
 
 Looking to contribute? These are some of the things that would be great to be added to phpMyCache. Feel free to submit your work via a pull request!
 * Support for prepared queries.
-* Support for custom callbacks in configuration to handle successful & failed queries, so developers can control how output is constructed.
