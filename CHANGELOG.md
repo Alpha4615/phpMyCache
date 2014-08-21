@@ -1,5 +1,9 @@
 # Changes
 
+## 0.2.1-alpha
+**Released:** August 21, 2014
+
+* **FIX:** Bug in cleanup tool that prevented JSON cache files from being cleaned up. Issue #13
 
 ## 0.2.0-alpha
 **Released:** August 17, 2014
