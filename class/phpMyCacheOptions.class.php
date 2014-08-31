@@ -89,7 +89,7 @@ class phpMyCacheOptions
     {
         if (property_exists($this, $propertyName)) {
             if (substr($propertyName, 0, 2) != '__') {
-                $this->$propertyName = $value;
+                $this->$propertyName = self::applyPropertyRules($propertyName, $value);
 
                 return $this;
             } elseif ($this->throwExceptionOnInvalidOption == TRUE) {
@@ -103,6 +103,27 @@ class phpMyCacheOptions
             return $this;
         }
 
+    }
+
+    /**
+     * If a propertyName can accept different forms of input that must get evaluated to a single data type, it must be done here. Example, defaultExpiry can accept a time in seconds, or a strtotime'able string.
+     *
+     * @param string $propertyName Name of property
+     * @param mixed  $value Pre-filtered value.
+     * @return mixed The final value
+     */
+    protected static function applyPropertyRules($propertyName, $value)
+    {
+        if ($propertyName === "defaultExpiry") {
+            if ($value !== NULL && (is_string($value) === TRUE && is_numeric($value) === FALSE)) {
+                $strtotime = strtotime($value);
+                if ($strtotime !== FALSE) {
+                    $value = $strtotime - time();
+                }
+            }
+        }
+
+        return $value;
     }
 
     /**
@@ -124,7 +145,7 @@ class phpMyCacheOptions
             throw new MissingOptionException('Missing values for required option(s): ' . implode(', ', $missing));
         }
         if (is_numeric($this->get('defaultExpiry')) == FALSE) {
-            throw new InvalidArgumentException("defaultExpiry configuration must be an integer");
+            throw new InvalidArgumentException("defaultExpiry configuration must be an integer or string that works with strtotime()");
         }
         if ((($this->get('errorCallback') instanceof Closure) || $this->get('errorCallback') === NULL) === FALSE) {
             throw new InvalidArgumentException('errorCallback must be an anonymous function or NULL.');

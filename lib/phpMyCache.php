@@ -88,6 +88,13 @@ class phpMyCache
 
     public function queryCache($query, $expiry = NULL, $ignoreCache = FALSE)
     {
+        //Check to see if expiry is a strotime'able string, per issue #3
+        if ($expiry !== NULL && (is_string($expiry) === TRUE && is_numeric($expiry) === FALSE)) {
+            $strtotime = strtotime($expiry);
+            if ($strtotime !== FALSE) {
+                $expiry = $strtotime-time();
+            }
+        }
         //Validate our config and throw exceptions if there's anything invalid going on.
         $this->option->validate();
 
